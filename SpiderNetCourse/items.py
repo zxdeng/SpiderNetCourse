@@ -13,6 +13,17 @@ class SpideretcourseItem(scrapy.Item):
     # name = scrapy.Field()
     pass
 
+class CourseItem(scrapy.Item):
+    title = scrapy.Field()
+    icon = scrapy.Field()
+    learner = scrapy.Field()
+    author = scrapy.Field()
+    link = scrapy.Field()
+    price = scrapy.Field()
+    course_id = scrapy.Field()
+    introduction = scrapy.Field()
+    graded = scrapy.Field()
+
 
 class QqCourseItem(scrapy.Item):
     title = scrapy.Field()
