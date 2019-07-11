@@ -25,7 +25,7 @@ class ImoocSpider(scrapy.Spider):
             else:
                 item['price'] = course.xpath("//span[contains(@class,'discount-price')]/text()").extract_first()
             item['link'] = "https://coding.imooc.com" + course.xpath("//a/@href").extract_first()
-            item['course_id'] = re.findall(r"\d+", course.xpath("//a/@href").extract_first())
+            item['course_id'] = re.findall(r"\d+", course.xpath("//a/@href").extract_first())[0]
             item['introduction'] = course.xpath("//p[contains(@class,'shizan-desc')]/text()").extract_first()
             yield item
         next_url = response.xpath("//div[@class='page']/a[contains(text(),'下一页')]/@href").extract_first()
