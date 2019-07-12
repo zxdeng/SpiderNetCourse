@@ -14,7 +14,7 @@ BOT_NAME = 'SpiderNetCourse'
 SPIDER_MODULES = ['SpiderNetCourse.spiders']
 NEWSPIDER_MODULE = 'SpiderNetCourse.spiders'
 
-SPLASH_URL = 'http://192.168.99.103:8050'
+SPLASH_URL = 'http://192.168.0.101:8050'
 FEED_EXPORT_ENCODING = 'utf-8'
 
 DOWNLOADER_MIDDLEWARES = {

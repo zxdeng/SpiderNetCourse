@@ -1,23 +1,23 @@
 # -*- coding: utf-8 -*-
 import scrapy
-from SpiderNetCourse.items import Study163CourseItem
+from SpiderNetCourse.items import CourseItem
 from scrapy_splash import SplashRequest
 import re
 import time
 
 
 class Study163Spider(scrapy.Spider):
-    name = 'study163'
+    name = '163'
     start_urls = [
         'https://study.163.com/category/480000003131009#/',
-        'https://study.163.com/category/480000003121024#/',
-        'https://study.163.com/category/480000003127010#/',
-        'https://study.163.com/category/480000003130008#/',
-        'https://study.163.com/category/480000003132060#/',
-        'https://study.163.com/category/480000003129033#/',
-        'https://study.163.com/category/480000003126038#/',
-        'https://study.163.com/category/400000001331002#/',
-        'https://study.163.com/category/480000003125071#/'
+        # 'https://study.163.com/category/480000003121024#/',
+        # 'https://study.163.com/category/480000003127010#/',
+        # 'https://study.163.com/category/480000003130008#/',
+        # 'https://study.163.com/category/480000003132060#/',
+        # 'https://study.163.com/category/480000003129033#/',
+        # 'https://study.163.com/category/480000003126038#/',
+        # 'https://study.163.com/category/400000001331002#/',
+        # 'https://study.163.com/category/480000003125071#/'
     ]
     # 'https://study.163.com/category/480000003131009#/',
     index_num = 1
@@ -35,7 +35,7 @@ class Study163Spider(scrapy.Spider):
         for course in courses:
             print("current_count：" + str(self.index_num) + response.url)
             self.index_num += 1
-            item = Study163CourseItem()
+            item = CourseItem()
             item['title'] = course.xpath(
                 ".//span[@class='uc-ykt-coursecard-wrap_tit_name']/text()").extract()[0]
             item['icon'] = 'https:' + \
@@ -52,9 +52,9 @@ class Study163Spider(scrapy.Spider):
 
             item['course_id'] = re.compile(r'\d+').findall(item['link'])[1]
 
-            yield item
-            # yield SplashRequest(item['link'], self.pass_detail, args={'wait':
-            # 0.5}, dont_filter=True, meta={'item': item})
+            # yield item
+            yield SplashRequest(item['link'], self.pass_detail, args={'wait':
+            0.5}, dont_filter=True, meta={'item': item})
 
         pages = response.xpath(
             "//div[@class='uc-course-list_content']//ul[@class='ux-pager']//a/text()").extract()
@@ -71,17 +71,21 @@ class Study163Spider(scrapy.Spider):
             current_page = int(re.compile(r'\d+').findall(response.url)[2])
         else:
             current_page = 1
-        if current_page < int(max_page):
-            current_page += 1
-            next_url = 'https://study.163.com/category/' + \
-                re.compile(r'\d+').findall(response.url)[1] + '#/?p=' + str(current_page)
-            yield SplashRequest(next_url, self.parse, args={'wait': 0.5}, dont_filter=True)
+        # if current_page < int(max_page):
+        #     current_page += 1
+        #     next_url = 'https://study.163.com/category/' + \
+        #         re.compile(r'\d+').findall(response.url)[1] + '#/?p=' + str(current_page)
+        #     yield SplashRequest(next_url, self.parse, args={'wait': 0.5}, dont_filter=True)
 
-    # def pass_detail(self, response):
-    #
-    #     item = response.meta['item']
-    #     item['introduction'] = response.xpath(
-    #         "//div[contains(@class,'cintrocon j-courseintro')]/text()").extract()[0]
-    #     item['author'] = response.xpath(
-    #         "//a[@class='j-userNode']/text()").extract()[0]
-    #     yield item
+    def pass_detail(self, response):
+
+        print('开始获取详情--》' + response.url)
+        item = response.meta['item']
+        try:
+            item['introduction'] = response.xpath(
+                "//div[contains(@class,'cintrocon j-courseintro')]/text()").xpath('string(.)').extract()[0]
+        except IndexError:
+            print('introduction get error!')
+        item['author'] = response.xpath(
+            "//a[@class='j-userNode']/text()").extract_first()
+        yield item
